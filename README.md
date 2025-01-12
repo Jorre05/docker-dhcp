@@ -1,2 +1,1 @@
-# docker-kea-dhcp
-Key DHCP server docker image
+Kea dhcp4 docker image
