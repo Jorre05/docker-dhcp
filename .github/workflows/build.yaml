@@ -35,5 +35,5 @@ jobs:
           file: ./Dockerfile
           push: true
           tags: | 
-            ghcr.io/jorre05/docker-dns:latest
+            ghcr.io/jorre05/docker-dhcp:latest
           platforms: linux/aarch64, linux/amd64
