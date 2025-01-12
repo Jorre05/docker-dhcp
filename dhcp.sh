@@ -4,23 +4,22 @@
 set -m
 
 mkdir /config
-mkdir -p /data/cache
-chown named:named /data/cache
-chmod 755 /data/cache
+mkdir -p /run/kea
     
 echo "Git clone ${GITHUB_CONFIG_REPO} in ${GITHUB_CLONE_DIR}"
 git clone ${GITHUB_CONFIG_REPO} ${GITHUB_CLONE_DIR}
 
 echo "kopie naar config"
-cp -frp ${GITHUB_CLONE_DIR}/dns/* /config
-sed s/#LISTEN_ON#/${LISTEN_ON}/g /config/named.conf -i
-sed s/#DHCP_SERVERS#/${DHCP_SERVERS}/g /config/named.conf -i
+cp -frp ${GITHUB_CLONE_DIR}/dhcp/* /config
+sed s/#LISTEN_ON#/${LISTEN_ON}/g /config/kea-dhcp4.conf -i
+sed s/#DHCP_SERVERS#/${DHCP_SERVERS}/g /config/kea-dhcp4.conf -i
 
 chown -R named:named /config
 chmod -R 755 /config
 
-/usr/sbin/named -g -c /config/named.conf -u named &
-
+/usr/sbin/kea-dhcp4 -c /config/kea-dhcp4.conf &
+/usr/sbin/kea-dhcp-ddns -c /config/kea-dhcp-ddns.conf &
+sleep 3600
 # now we bring the primary process back into the foreground
 # and leave it there
 fg %1
