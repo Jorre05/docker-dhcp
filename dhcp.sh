@@ -16,7 +16,7 @@ sed "s/#DNS_SERVERS#/${DNS_SERVERS}/g" /config/kea-dhcp4.conf -i
 
 /usr/sbin/kea-dhcp4 -c /config/kea-dhcp4.conf &
 /usr/sbin/kea-dhcp-ddns -c /config/kea-dhcp-ddns.conf &
-sleep 3600
+
 # now we bring the primary process back into the foreground
 # and leave it there
 fg %1
