@@ -3,20 +3,37 @@
 # turn on bash's job control
 set -m
 
-mkdir /config
-mkdir -p /run/kea
-    
-echo "Git clone ${GITHUB_CONFIG_REPO} in ${GITHUB_CLONE_DIR}"
-git clone ${GITHUB_CONFIG_REPO} ${GITHUB_CLONE_DIR}
+if [ ! -d /${GITHUB_CLONE_DIR} ]; then
+    echo "Aanmaken git map "${GITHUB_CLONE_DIR}
+    mkdir -p /${GITHUB_CLONE_DIR}
+    git clone ${GITHUB_CONFIG_REPO} ${GITHUB_CLONE_DIR}
+else
+    echo "git pull in map "${GITHUB_CLONE_DIR}
+    cd ${GITHUB_CLONE_DIR}
+    git pull
+fi
 
-echo "kopie naar config"
-cp -frp ${GITHUB_CLONE_DIR}/dhcp/* /config
-sed "s/#LISTEN_ON#/${LISTEN_ON}/g" /config/kea-dhcp4.conf -i
-sed "s/#DNS_SERVERS#/${DNS_SERVERS}/g" /config/kea-dhcp4.conf -i
+if [ ! -d /config ]; then
+    echo "Aanmaken config map "
+    mkdir -p /config
+fi
+
+if [ ! -f /config/kea-dhcp4.conf ]; then
+    echo "kopie naar config"
+    cp -frp ${GITHUB_CLONE_DIR}/dhcp/kea-dhcp4.conf /config
+    sed "s/#LISTEN_ON#/${LISTEN_ON}/g" /config/kea-dhcp4.conf -i
+    sed "s/#DNS_SERVERS#/${DNS_SERVERS}/g" /config/kea-dhcp4.conf -i
+fi
+
+if [ ! -f /config/kea-dhcp-ddns.conf ]; then
+    echo "kopie naar config"
+    cp -frp ${GITHUB_CLONE_DIR}/dhcp/kea-dhcp-ddns.conf /config
+fi
+
+mkdir -p /run/kea
+rm -fr /run/kea/kea*
 
 /usr/sbin/kea-dhcp4 -c /config/kea-dhcp4.conf &
 /usr/sbin/kea-dhcp-ddns -c /config/kea-dhcp-ddns.conf &
 
-# now we bring the primary process back into the foreground
-# and leave it there
 fg %1
