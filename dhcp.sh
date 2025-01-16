@@ -3,16 +3,15 @@
 # turn on bash's job control
 set -m
 
-if [ ! -d /${GITHUB_CLONE_DIR} ]; then
-    echo "Aanmaken git map "${GITHUB_CLONE_DIR}
-    mkdir -p /${GITHUB_CLONE_DIR}
-    git clone ${GITHUB_CONFIG_REPO} ${GITHUB_CLONE_DIR}
-else
-    echo "git pull in map "${GITHUB_CLONE_DIR}
-    cd ${GITHUB_CLONE_DIR}
-    git pull
+if [ -d /${GITHUB_CLONE_DIR} ]; then
+    echo "Verwijderen "${GITHUB_CLONE_DIR}
+    rm -fr ${GITHUB_CLONE_DIR}
 fi
 
+echo "Aanmaken git map "${GITHUB_CLONE_DIR}
+mkdir -p /${GITHUB_CLONE_DIR}
+git clone ${GITHUB_CONFIG_REPO} ${GITHUB_CLONE_DIR}
+    
 if [ ! -d /config ]; then
     echo "Aanmaken config map "
     mkdir -p /config
